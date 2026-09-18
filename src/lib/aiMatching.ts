@@ -1,13 +1,21 @@
 import { Job, ResumeProfile, MatchBreakdown } from '../types';
 
+/**
+ * Calculates a multi-dimensional AI match score considering:
+ * - Skills (40%)
+ * - Experience (25%)
+ * - Industry / Domain (15%)
+ * - Location / Remote (10%)
+ * - Education & Certifications (10%)
+ */
 export function calculateMatchScore(job: Job, profile?: ResumeProfile): MatchBreakdown {
   if (!profile || !profile.skills || profile.skills.length === 0) {
     // Default baseline if no resume profile uploaded yet
     return {
-      overallScore: 70,
-      skillMatchScore: 70,
-      experienceMatchScore: 75,
-      locationMatchScore: 65,
+      overallScore: 85,
+      skillMatchScore: 80,
+      experienceMatchScore: 85,
+      locationMatchScore: 80,
       matchedSkills: job.skills.slice(0, 3),
       missingSkills: job.skills.slice(3)
     };
@@ -16,7 +24,7 @@ export function calculateMatchScore(job: Job, profile?: ResumeProfile): MatchBre
   const userSkillsLower = profile.skills.map(s => s.toLowerCase());
   const jobSkillsLower = job.skills.map(s => s.toLowerCase());
 
-  // 1. Skill Matching
+  // 1. Skill Matching (40% Weight)
   const matchedSkills: string[] = [];
   const missingSkills: string[] = [];
 
@@ -34,35 +42,62 @@ export function calculateMatchScore(job: Job, profile?: ResumeProfile): MatchBre
 
   const skillMatchScore = job.skills.length > 0 
     ? Math.min(100, Math.round((matchedSkills.length / job.skills.length) * 100))
-    : 80;
+    : 85;
 
-  // 2. Domain & Experience Fit
+  // 2. Experience Level Fit (25% Weight)
   let experienceMatchScore = 75;
-  if (profile.targetDomains && profile.targetDomains.includes(job.domain)) {
-    experienceMatchScore += 15;
+  if (profile.experienceYears >= 5) {
+    if (job.experienceLevel.includes('4+') || job.experienceLevel.includes('5+') || job.experienceLevel.includes('4-8') || job.experienceLevel.includes('5-9')) {
+      experienceMatchScore = 98;
+    } else {
+      experienceMatchScore = 88;
+    }
+  } else if (profile.experienceYears >= 2) {
+    if (job.experienceLevel.includes('2-5') || job.experienceLevel.includes('3-7')) {
+      experienceMatchScore = 96;
+    } else {
+      experienceMatchScore = 82;
+    }
+  } else {
+    experienceMatchScore = 85;
   }
-  
-  // Normalize experience matching
-  if (profile.experienceYears >= 5 && (job.experienceLevel.includes('5+') || job.experienceLevel.includes('4-7') || job.experienceLevel.includes('6-10'))) {
-    experienceMatchScore += 10;
-  } else if (profile.experienceYears >= 2 && profile.experienceYears <= 5) {
-    experienceMatchScore += 5;
-  }
-  experienceMatchScore = Math.min(100, experienceMatchScore);
 
-  // 3. Location Fit
-  let locationMatchScore = 70;
+  // 3. Industry & Domain Fit (15% Weight)
+  let domainMatchScore = 70;
+  if (profile.targetDomains && profile.targetDomains.includes(job.domain)) {
+    domainMatchScore = 98;
+  }
+
+  // 4. Location & Work Mode Fit (10% Weight)
+  let locationMatchScore = 75;
   if (job.workMode === 'Remote') {
-    locationMatchScore = 98;
+    locationMatchScore = 99;
   } else if (profile.locationPreference && job.location.toLowerCase().includes(profile.locationPreference.toLowerCase())) {
     locationMatchScore = 95;
+  } else if (job.workMode === 'Hybrid') {
+    locationMatchScore = 90;
   }
 
-  // Weighted overall calculation: 50% skills, 30% experience/domain, 20% location
-  const overallScore = Math.min(
-    99,
-    Math.round(skillMatchScore * 0.50 + experienceMatchScore * 0.30 + locationMatchScore * 0.20)
+  // 5. Education & Certifications Fit (10% Weight)
+  let educationMatchScore = 85;
+  if (profile.education && profile.education.length > 0) {
+    educationMatchScore = 95;
+  }
+  if (profile.certifications && profile.certifications.length > 0) {
+    educationMatchScore = Math.min(100, educationMatchScore + 5);
+  }
+
+  // Weighted aggregate formula:
+  // 40% Skills + 25% Experience + 15% Domain + 10% Location + 10% Education
+  const weighted = (
+    skillMatchScore * 0.40 +
+    experienceMatchScore * 0.25 +
+    domainMatchScore * 0.15 +
+    locationMatchScore * 0.10 +
+    educationMatchScore * 0.10
   );
+
+  const overallScore = Math.min(99, Math.max(70, Math.round(weighted)));
 
   return {
     overallScore,

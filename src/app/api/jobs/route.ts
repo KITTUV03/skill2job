@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { globalJobAggregator } from '@/lib/jobAggregator/engine';
 import { INITIAL_JOBS } from '@/lib/jobData';
 
 export async function GET(request: NextRequest) {
@@ -7,8 +8,16 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search');
   const portal = searchParams.get('portal');
   const workMode = searchParams.get('workMode');
+  const limit = parseInt(searchParams.get('limit') || '50', 10);
+  const page = parseInt(searchParams.get('page') || '1', 10);
 
-  let filtered = [...INITIAL_JOBS];
+  let pool = globalJobAggregator.getAllJobs();
+  if (pool.length === 0) {
+    globalJobAggregator.ingestJobsBatch(INITIAL_JOBS);
+    pool = globalJobAggregator.getAllJobs();
+  }
+
+  let filtered = [...pool];
 
   if (domain && domain !== 'All Domains') {
     filtered = filtered.filter(j => j.domain === domain);
@@ -31,9 +40,18 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Sort descending by matchScore
+  filtered.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+
+  const total = filtered.length;
+  const startIndex = (page - 1) * limit;
+  const paginatedJobs = filtered.slice(startIndex, startIndex + limit);
+
   return NextResponse.json({
     success: true,
-    total: filtered.length,
-    jobs: filtered
+    page,
+    limit,
+    total,
+    jobs: paginatedJobs
   });
 }
