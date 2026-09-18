@@ -4,64 +4,88 @@
 
 @layer base {
   :root {
-    --background: 40 20% 97%; /* #FDFBF7 Warm Pearl Cream */
-    --foreground: 24 10% 10%; /* #1C1917 Deep Charcoal */
-    --card: 0 0% 100%;
-    --card-border: 38 18% 88%; /* #EBE5D8 */
+    --background: #F8FAFC;
+    --foreground: #0F172A;
+    --card: #FFFFFF;
+    --card-border: #E2E8F0;
+  }
+
+  .dark {
+    --background: #0F172A;
+    --foreground: #F8FAFC;
+    --card: #1E293B;
+    --card-border: #334155;
   }
 
   body {
-    background-color: #FDFBF7;
-    color: #1C1917;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* Premium Warm Cream SaaS Glass Cards & Panels */
+/* Linear / Stripe / Vercel Modern Glass Panels & Cards */
 .glass-panel {
-  background: rgba(253, 251, 247, 0.92);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #EBE5D8;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.88);
+  border-bottom: 1px solid #1E293B;
 }
 
 .glass-card {
   background: #FFFFFF;
   backdrop-filter: blur(12px);
-  border: 1px solid #EAE4D7;
-  box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.05);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-card {
+  background: #1E293B;
+  border: 1px solid #334155;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
 }
 
 .glass-card:hover {
   transform: translateY(-2px);
-  border-color: #D97706;
-  box-shadow: 0 8px 25px -4px rgba(217, 119, 6, 0.12);
+  border-color: #2563EB;
+  box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.10);
 }
 
-.glass-card:active {
-  transform: scale(0.99);
+.dark .glass-card:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 10px 25px -4px rgba(59, 130, 246, 0.20);
 }
 
-/* Premium Warm Text Gradient */
+/* Premium Linear SaaS Text Gradient */
 .text-gradient {
-  background: linear-gradient(135deg, #1E1B4B 0%, #4F46E5 50%, #D97706 100%);
+  background: linear-gradient(135deg, #2563EB 0%, #7C3AED 60%, #06B6D4 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom Scrollbar */
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FDFBF7;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D6CEBE;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
 ::-webkit-scrollbar-thumb:hover {
-  background: #B8AC96;
+  background: #94A3B8;
 }

@@ -71,12 +71,12 @@ export const Footer: React.FC = () => {
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white tracking-wider uppercase">Platform & Legal</h4>
             <ul className="space-y-2 text-sm text-slate-400">
-              <li><Link href="/dashboard" className="hover:text-blue-400 transition-colors">Candidate Dashboard</Link></li>
-              <li><Link href="/resume" className="hover:text-blue-400 transition-colors">Resume AI Parser</Link></li>
-              <li><Link href="/admin" className="hover:text-blue-400 transition-colors">Admin Sync Terminal</Link></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">Contact Support</a></li>
+              <li><Link href="/about" className="hover:text-primary-400 transition-colors">About RoleRadar</Link></li>
+              <li><Link href="/pricing" className="hover:text-primary-400 transition-colors">Pricing & Plans</Link></li>
+              <li><Link href="/contact" className="hover:text-primary-400 transition-colors">Contact Support</Link></li>
+              <li><Link href="/dashboard" className="hover:text-primary-400 transition-colors">Candidate Dashboard</Link></li>
+              <li><Link href="/resume" className="hover:text-primary-400 transition-colors">Resume AI Parser</Link></li>
+              <li><Link href="/admin" className="hover:text-primary-400 transition-colors">Admin Sync Terminal</Link></li>
             </ul>
           </div>
 
