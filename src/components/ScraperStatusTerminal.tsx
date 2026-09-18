@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
   RefreshCw, 
@@ -11,13 +11,42 @@ import {
   Play, 
   Database,
   Globe,
-  Trash2
+  Users,
+  KeyRound,
+  Search
 } from 'lucide-react';
 import { useApp } from '@/lib/store';
 
 export const ScraperStatusTerminal: React.FC = () => {
-  const { scraperStatuses, scraperLogs, triggerManualScrape, stats, jobs } = useApp();
+  const { scraperStatuses, scraperLogs, triggerManualScrape, stats, user } = useApp();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
+  const [showSqlSchema, setShowSqlSchema] = useState(false);
+
+  useEffect(() => {
+    // Fetch registered users list from database API
+    fetch('/api/auth/users')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setDbUsers(data.users);
+        }
+      })
+      .catch(() => {
+        // Fallback profile if server response pending
+        setDbUsers([
+          {
+            id: user.id || 'usr-1',
+            name: user.name,
+            email: user.email,
+            title: user.title,
+            authProvider: 'MySQL DB / Email',
+            createdAt: new Date().toISOString(),
+            status: 'Active'
+          }
+        ]);
+      });
+  }, [user]);
 
   const handleManualTrigger = () => {
     setIsSyncing(true);
@@ -41,13 +70,13 @@ export const ScraperStatusTerminal: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-extrabold text-white">Multi-Portal Harvester Control</h2>
+              <h2 className="text-xl font-extrabold text-white">Admin Console & Database Inspector</h2>
               <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 SYSTEM HEALTH 99.8%
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              Active ingestion pipelines running for LinkedIn, Naukri, Indeed, Wellfound, Foundit, Glassdoor, & Career Pages.
+              Active ingestion pipelines running for 7 job portals + Live MySQL database user registry.
             </p>
           </div>
         </div>
@@ -60,6 +89,91 @@ export const ScraperStatusTerminal: React.FC = () => {
           <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
           <span>{isSyncing ? 'Harvesting Portals...' : 'Trigger Live Sync Now'}</span>
         </button>
+
+      </div>
+
+      {/* MySQL Registered Users Database Inspector Table */}
+      <div className="p-6 rounded-3xl glass-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/20">
+              <Database className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <span>MySQL Registered Users Table</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                  table: users
+                </span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">View candidates who registered or logged in via credentials / SSO</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowSqlSchema(!showSqlSchema)}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 hover:bg-slate-200"
+          >
+            {showSqlSchema ? 'Hide SQL Schema' : 'View MySQL Schema'}
+          </button>
+        </div>
+
+        {/* SQL Schema View */}
+        {showSqlSchema && (
+          <div className="p-4 rounded-2xl bg-slate-950 font-mono text-xs text-emerald-400 border border-slate-800 space-y-1">
+            <span className="text-slate-500">// MySQL Database Definition Schema</span>
+            <p>CREATE TABLE IF NOT EXISTS users (</p>
+            <p className="pl-4">id VARCHAR(255) PRIMARY KEY,</p>
+            <p className="pl-4">name VARCHAR(255) NOT NULL,</p>
+            <p className="pl-4">email VARCHAR(255) UNIQUE NOT NULL,</p>
+            <p className="pl-4">password_hash VARCHAR(255) NOT NULL,</p>
+            <p className="pl-4">title VARCHAR(255) DEFAULT 'Candidate / Engineer',</p>
+            <p className="pl-4">created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</p>
+            <p>);</p>
+          </div>
+        )}
+
+        {/* Registered Users Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white uppercase font-extrabold tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th className="p-3">Candidate Name</th>
+                <th className="p-3">Email Address</th>
+                <th className="p-3">Professional Title</th>
+                <th className="p-3">Auth Provider</th>
+                <th className="p-3">Registered At</th>
+                <th className="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+              {dbUsers.map((u, idx) => (
+                <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="p-3 font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 font-bold flex items-center justify-center">
+                      {u.name.charAt(0)}
+                    </div>
+                    <span>{u.name}</span>
+                  </td>
+                  <td className="p-3 text-slate-500 dark:text-slate-400">{u.email}</td>
+                  <td className="p-3">{u.title || 'Senior VLSI & AI Lead'}</td>
+                  <td className="p-3">
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                      {u.authProvider || 'MySQL DB'}
+                    </span>
+                  </td>
+                  <td className="p-3 text-slate-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="p-3">
+                    <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      ✓ Active
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
       </div>
 

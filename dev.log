@@ -244,3 +244,5 @@ Import trace for requested module:
  POST /api/auth/register 200 in 369ms
  ✓ Compiled /api/auth/login in 69ms (59 modules)
  POST /api/auth/login 200 in 128ms
+ ✓ Compiled in 658ms (298 modules)
+ ✓ Compiled in 387ms (312 modules)
