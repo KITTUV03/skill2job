@@ -4,85 +4,57 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 20% 98%;
+    --foreground: 224 71% 4%;
     --card: 0 0% 100%;
-    --card-border: 214.3 31.8% 91.4%;
+    --card-border: 220 13% 91%;
   }
 
   .dark {
-    --background: 222 47% 7%;
+    --background: 222 47% 6%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
-    --card-border: 217.2 32.6% 17.5%;
+    --card: 222 47% 9%;
+    --card-border: 217 33% 15%;
   }
 
   body {
-    background-color: theme('colors.slate.50');
-    color: theme('colors.slate.900');
-    font-family: 'Inter', sans-serif;
-  }
-
-  .dark body {
-    background-color: #0B1120;
-    color: theme('colors.slate.100');
+    background-color: #090D16;
+    color: #F8FAFC;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
-/* Glassmorphism Styles */
+/* Modern Minimalist Glass Cards & Panels */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.dark .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
+  background: rgba(13, 19, 34, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dark .glass-card {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(51, 65, 85, 0.5);
-  box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.3);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px -4px rgba(37, 99, 235, 0.15);
-  border-color: rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 8px 30px -4px rgba(56, 189, 248, 0.15);
 }
 
-.dark .glass-card:hover {
-  box-shadow: 0 12px 30px -4px rgba(37, 99, 235, 0.25);
-  border-color: rgba(59, 130, 246, 0.5);
+.glass-card:active {
+  transform: scale(0.99);
 }
 
-/* Gradient accents */
+/* Subtle Neon Text Gradient */
 .text-gradient {
-  background: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #06B6D4 100%);
+  background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #34D399 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.bg-gradient-hero {
-  background: radial-gradient(circle at 50% 20%, rgba(37, 99, 235, 0.15) 0%, rgba(124, 58, 237, 0.08) 35%, transparent 70%);
-}
-
-.dark .bg-gradient-hero {
-  background: radial-gradient(circle at 50% 20%, rgba(37, 99, 235, 0.25) 0%, rgba(124, 58, 237, 0.15) 35%, transparent 75%);
 }
 
 /* Custom Scrollbar */
@@ -91,12 +63,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #090D16;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #1E293B;
   border-radius: 9999px;
 }
-.dark ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
