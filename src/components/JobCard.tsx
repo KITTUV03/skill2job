@@ -40,7 +40,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSelectJob }) => {
   };
 
   return (
-    <div className="group relative p-5 rounded-3xl glass-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 hover:border-blue-500/40 shadow-sm hover:shadow-xl transition-all duration-300">
+    <div className="group relative p-5 rounded-3xl glass-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 hover:border-blue-500/50 shadow-sm hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
       
       {/* Top Bar: Company Logo, Title & Match Score Badge */}
       <div className="flex items-start justify-between gap-4">

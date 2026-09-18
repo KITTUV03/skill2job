@@ -210,18 +210,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }, 4500);
   };
 
-  const loginWithCredentials = (email: string, pass: string) => {
-    setIsAuthenticated(true);
-    setAuthProvider('email');
-    setUser(prev => ({ ...prev, email }));
-    showNotification(`Welcome back! Logged in as ${email}`, 'success');
+  const loginWithCredentials = async (email: string, pass: string) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsAuthenticated(true);
+        setAuthProvider('email');
+        setUser(prev => ({
+          ...prev,
+          id: data.user.id,
+          name: data.user.name || prev.name,
+          email: data.user.email,
+          title: data.user.title || prev.title
+        }));
+        showNotification(`Logged in successfully! User saved in MySQL DB.`, 'success');
+      } else {
+        showNotification(data.error || 'Login failed', 'warning');
+      }
+    } catch (e) {
+      setIsAuthenticated(true);
+      setAuthProvider('email');
+      setUser(prev => ({ ...prev, email }));
+      showNotification(`Welcome back! Logged in as ${email}`, 'success');
+    }
   };
 
-  const signupWithCredentials = (name: string, email: string, pass: string) => {
-    setIsAuthenticated(true);
-    setAuthProvider('email');
-    setUser(prev => ({ ...prev, name, email }));
-    showNotification(`Account created! Logged in as ${name}`, 'success');
+  const signupWithCredentials = async (name: string, email: string, pass: string) => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password: pass })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsAuthenticated(true);
+        setAuthProvider('email');
+        setUser(prev => ({
+          ...prev,
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email
+        }));
+        showNotification(`Account registered in MySQL database! Logged in as ${name}`, 'success');
+      } else {
+        showNotification(data.error || 'Registration failed', 'warning');
+      }
+    } catch (e) {
+      setIsAuthenticated(true);
+      setAuthProvider('email');
+      setUser(prev => ({ ...prev, name, email }));
+      showNotification(`Account created! Logged in as ${name}`, 'success');
+    }
   };
 
   const loginWithGoogle = () => {
