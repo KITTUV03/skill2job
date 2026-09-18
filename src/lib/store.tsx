@@ -43,42 +43,14 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authProvider, setAuthProvider] = useState<'google' | 'linkedin' | 'email'>('email');
   
-  // Default initial demo user profile
-  const [resumeProfile, setResumeProfileState] = useState<ResumeProfile | undefined>({
-    id: 'resume-demo-101',
-    fileName: 'Alex_Vanderbilt_VLSI_AIML_Resume.pdf',
-    uploadedAt: new Date().toISOString(),
-    rawText: 'Experienced Senior Physical Design & Verification Lead with expertise in SystemVerilog, UVM, PyTorch, RTL, C++, STA, Synopsys ICC2, and Next.js.',
-    skills: ['SystemVerilog', 'UVM', 'Verilog', 'STA', 'PyTorch', 'C++', 'Python', 'TypeScript', 'React', 'Linux Kernel'],
-    experienceYears: 5,
-    education: [
-      { degree: 'B.Tech in Microelectronics & Computer Engineering', institution: 'IIT Madras', year: '2020' }
-    ],
-    certifications: [
-      'Cadence Certified Innovus Physical Design Master',
-      'Synopsys PrimeTime STA Specialist'
-    ],
-    projects: [
-      {
-        title: '3nm Multi-Core AI Accelerator Physical Closure',
-        description: 'Achieved 2.4GHz timing closure and IR-drop compliance on 3nm tapeout.',
-        techStack: ['SystemVerilog', 'Synopsys ICC2', 'STA', 'Python']
-      }
-    ],
-    preferredRoles: ['Senior Physical Design Engineer', 'Staff ASIC Verification Lead', 'Staff AI Architect'],
-    targetDomains: ['VLSI / Semiconductor', 'AI / Machine Learning'],
-    locationPreference: 'Bengaluru / San Jose / Hybrid',
-    expectedSalary: '₹35 - ₹50 LPA / $180k+'
-  });
+  // Default user profile starts empty for security
+  const [resumeProfile, setResumeProfileState] = useState<ResumeProfile | undefined>(undefined);
 
-  // Initialize jobs dynamically aligned to the initial profile, sorted descending (99%, 98%, 97%...)
+  // Initialize jobs dynamically
   const [jobs, setJobs] = useState<Job[]>(() => {
-    if (resumeProfile) {
-      return generateMatchedJobsForResume(resumeProfile);
-    }
     return INITIAL_JOBS.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
   });
 
@@ -87,14 +59,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
 
   const [user, setUser] = useState<User>({
-    id: 'usr-1',
-    name: 'Alex Vanderbilt',
-    email: 'alex.vanderbilt@roleradar.ai',
+    id: '',
+    name: '',
+    email: '',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    title: 'Senior VLSI & AI Systems Lead',
-    location: 'Bengaluru, India',
-    resumeProfile,
-    savedJobIds
+    title: 'Candidate / Engineer',
+    location: '',
+    savedJobIds: []
   });
 
   const [applications, setApplications] = useState<JobApplication[]>([
@@ -345,6 +316,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const logout = () => {
     setIsAuthenticated(false);
+    setUser({
+      id: '',
+      name: '',
+      email: '',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      title: 'Candidate / Engineer',
+      location: '',
+      savedJobIds: []
+    });
+    setResumeProfileState(undefined);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('roleradar_user');
       localStorage.removeItem('roleradar_auth');

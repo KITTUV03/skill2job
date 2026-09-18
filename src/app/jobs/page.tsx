@@ -7,6 +7,7 @@ import { JobCard } from '@/components/JobCard';
 import { JobFilterSidebar } from '@/components/JobFilterSidebar';
 import { AIMatchVisualizer } from '@/components/AIMatchVisualizer';
 import { JobDetailModal } from '@/components/JobDetailModal';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Search, Sparkles, X, Filter, Zap } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import { Job } from '@/types';
@@ -227,7 +228,9 @@ export default function JobsPage() {
         </div>
       </div>
     }>
-      <JobsContent />
+      <ProtectedRoute>
+        <JobsContent />
+      </ProtectedRoute>
     </Suspense>
   );
 }
