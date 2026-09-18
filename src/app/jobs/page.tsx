@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '@/components/Sidebar';
 import { JobCard } from '@/components/JobCard';
@@ -11,7 +11,7 @@ import { Search, Sparkles, X, Filter, Zap } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import { Job } from '@/types';
 
-export default function JobsPage() {
+function JobsContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const initialDomain = searchParams.get('domain') || 'All Domains';
@@ -214,5 +214,20 @@ export default function JobsPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 animate-pulse">
+          <Sparkles className="w-5 h-5 text-purple-500" />
+          <span>Loading Job Search Engine...</span>
+        </div>
+      </div>
+    }>
+      <JobsContent />
+    </Suspense>
   );
 }
