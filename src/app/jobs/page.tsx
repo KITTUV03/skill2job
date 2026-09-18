@@ -83,7 +83,7 @@ function JobsContent() {
       }
 
       return true;
-    });
+    }).sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
   }, [jobs, searchQuery, filters]);
 
   const handleReset = () => {

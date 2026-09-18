@@ -5,6 +5,7 @@ import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemSt
 import { INITIAL_JOBS } from './jobData';
 import { calculateMatchScore } from './aiMatching';
 import { parseResumeText } from './resumeParser';
+import { generateMatchedJobsForResume } from './resumeJobMatcher';
 import { INITIAL_SCRAPER_STATUSES, INITIAL_SCRAPER_LOGS, generateDynamicJob } from './scraperEngine';
 
 interface AppContextType {
@@ -12,10 +13,10 @@ interface AppContextType {
   toggleTheme: () => void;
   isAuthenticated: boolean;
   authProvider?: 'google' | 'linkedin' | 'email';
-  loginWithCredentials: (email: string, pass: string) => void;
-  signupWithCredentials: (name: string, email: string, pass: string) => void;
-  loginWithGoogle: () => void;
-  loginWithLinkedIn: () => void;
+  loginWithCredentials: (email: string, pass: string) => Promise<boolean>;
+  signupWithCredentials: (name: string, email: string, pass: string) => Promise<boolean>;
+  loginWithGoogle: (customProfile?: { name: string; email: string }) => void;
+  loginWithLinkedIn: (customProfile?: { name: string; email: string }) => void;
   logout: () => void;
   updatePassword: (newPass: string) => void;
   user: User;
@@ -44,11 +45,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [authProvider, setAuthProvider] = useState<'google' | 'linkedin' | 'email'>('email');
-  const [jobs, setJobs] = useState<Job[]>(INITIAL_JOBS);
-  const [savedJobIds, setSavedJobIds] = useState<string[]>(['job-vlsi-01', 'job-aiml-01']);
-  const [selectedJobForModal, setSelectedJobForModal] = useState<Job | null>(null);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
-
+  
   // Default initial demo user profile
   const [resumeProfile, setResumeProfileState] = useState<ResumeProfile | undefined>({
     id: 'resume-demo-101',
@@ -71,11 +68,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         techStack: ['SystemVerilog', 'Synopsys ICC2', 'STA', 'Python']
       }
     ],
-    preferredRoles: ['Senior Physical Design Engineer', 'Design Verification Lead', 'Staff AI Architect'],
-    targetDomains: ['VLSI / Semiconductor', 'AI / Machine Learning', 'Software Engineering'],
+    preferredRoles: ['Senior Physical Design Engineer', 'Staff ASIC Verification Lead', 'Staff AI Architect'],
+    targetDomains: ['VLSI / Semiconductor', 'AI / Machine Learning'],
     locationPreference: 'Bengaluru / San Jose / Hybrid',
     expectedSalary: '₹35 - ₹50 LPA / $180k+'
   });
+
+  // Initialize jobs dynamically aligned to the initial profile, sorted descending (99%, 98%, 97%...)
+  const [jobs, setJobs] = useState<Job[]>(() => {
+    if (resumeProfile) {
+      return generateMatchedJobsForResume(resumeProfile);
+    }
+    return INITIAL_JOBS.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+  });
+
+  const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
+  const [selectedJobForModal, setSelectedJobForModal] = useState<Job | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
 
   const [user, setUser] = useState<User>({
     id: 'usr-1',
@@ -98,8 +107,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       location: 'Bengaluru, India / San Jose, CA',
       status: 'Interview Scheduled',
       appliedDate: '2026-09-15',
-      matchScore: 96,
-      salary: '₹32 - ₹48 LPA',
+      matchScore: 99,
+      salary: '₹38 - ₹55 LPA',
       sourcePortal: 'LinkedIn',
       notes: 'Technical Interview round scheduled for Sept 22nd at 3 PM IST.'
     },
@@ -107,27 +116,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       id: 'app-2',
       jobId: 'job-aiml-01',
       jobTitle: 'Staff AI / LLM Architect',
-      company: 'OpenAI (Demo Partner)',
+      company: 'OpenAI',
       logo: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=120&auto=format&fit=crop&q=60',
       location: 'San Francisco, CA / Remote',
       status: 'Under Review',
       appliedDate: '2026-09-17',
-      matchScore: 94,
-      salary: '$220,000 - $310,000',
+      matchScore: 98,
+      salary: '$240,000 - $340,000',
       sourcePortal: 'Wellfound'
-    },
-    {
-      id: 'app-3',
-      jobId: 'job-swe-01',
-      jobTitle: 'Senior Full Stack Engineer',
-      company: 'Stripe',
-      logo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=120&auto=format&fit=crop&q=60',
-      location: 'New York, NY / Remote',
-      status: 'Applied',
-      appliedDate: '2026-09-18',
-      matchScore: 88,
-      salary: '$160,000 - $220,000',
-      sourcePortal: 'Indeed'
     }
   ]);
 
@@ -135,26 +131,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [scraperLogs, setScraperLogs] = useState<ScraperLog[]>(INITIAL_SCRAPER_LOGS);
 
   const [stats, setStats] = useState<SystemStats>({
-    totalJobs: INITIAL_JOBS.length + 8420,
+    totalJobs: jobs.length + 8420,
     newToday: 48,
     activeCompanies: 620,
     totalApplications: applications.length,
-    matchSuccessRate: 94.8
+    matchSuccessRate: 98.4
   });
 
-  // Calculate scores whenever jobs or resumeProfile change
+  // Restore session from localStorage if available
   useEffect(() => {
-    setJobs(prevJobs => 
-      prevJobs.map(job => {
-        const breakdown = calculateMatchScore(job, resumeProfile);
-        return {
-          ...job,
-          matchScore: breakdown.overallScore,
-          matchBreakdown: breakdown
-        };
-      })
-    );
-  }, [resumeProfile]);
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('roleradar_user');
+      const savedAuth = localStorage.getItem('roleradar_auth');
+      if (savedUser && savedAuth === 'true') {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          setUser(parsedUser);
+          setIsAuthenticated(true);
+        } catch (e) {
+          console.warn('Failed to parse cached user:', e);
+        }
+      }
+    }
+  }, []);
 
   // Sync html class for dark/light mode
   useEffect(() => {
@@ -166,7 +165,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [theme]);
 
-  // Periodic simulated live background harvesting (runs every 30 seconds)
+  // Periodic simulated live background harvesting (every 45s)
   useEffect(() => {
     const interval = setInterval(() => {
       const portals: JobPortalSource[] = ['LinkedIn', 'Naukri', 'Indeed', 'Wellfound', 'Foundit', 'Glassdoor', 'Company Career Page'];
@@ -176,7 +175,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       newJob.matchScore = breakdown.overallScore;
       newJob.matchBreakdown = breakdown;
 
-      setJobs(prev => [newJob, ...prev]);
+      // Add new job and keep list sorted descending
+      setJobs(prev => {
+        const updated = [newJob, ...prev];
+        return updated.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+      });
+
       setStats(prev => ({
         ...prev,
         totalJobs: prev.totalJobs + 1,
@@ -193,8 +197,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       };
 
       setScraperLogs(prev => [newLog, ...prev.slice(0, 19)]);
-      showNotification(`⚡ Live Job Ingested: "${newJob.title}" via ${randomPortal}`, 'info');
-    }, 30000);
+    }, 45000);
 
     return () => clearInterval(interval);
   }, [resumeProfile]);
@@ -210,7 +213,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }, 4500);
   };
 
-  const loginWithCredentials = async (email: string, pass: string) => {
+  const loginWithCredentials = async (email: string, pass: string): Promise<boolean> => {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -218,29 +221,47 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         body: JSON.stringify({ email, password: pass })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.user) {
         setIsAuthenticated(true);
         setAuthProvider('email');
-        setUser(prev => ({
-          ...prev,
+        const updatedUser: User = {
+          ...user,
           id: data.user.id,
-          name: data.user.name || prev.name,
+          name: data.user.name || email.split('@')[0],
           email: data.user.email,
-          title: data.user.title || prev.title
-        }));
-        showNotification(`Logged in successfully! User saved in MySQL DB.`, 'success');
+          title: data.user.title || 'Candidate / Engineer'
+        };
+        setUser(updatedUser);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
+          localStorage.setItem('roleradar_auth', 'true');
+        }
+        showNotification(`Welcome back, ${updatedUser.name}!`, 'success');
+        return true;
       } else {
-        showNotification(data.error || 'Login failed', 'warning');
+        showNotification(data.error || 'Login failed. Please check credentials.', 'warning');
+        return false;
       }
     } catch (e) {
+      // Local fallback for client-side resiliency
       setIsAuthenticated(true);
       setAuthProvider('email');
-      setUser(prev => ({ ...prev, email }));
-      showNotification(`Welcome back! Logged in as ${email}`, 'success');
+      const fallbackUser: User = {
+        ...user,
+        email,
+        name: email.split('@')[0]
+      };
+      setUser(fallbackUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('roleradar_user', JSON.stringify(fallbackUser));
+        localStorage.setItem('roleradar_auth', 'true');
+      }
+      showNotification(`Logged in as ${email}`, 'success');
+      return true;
     }
   };
 
-  const signupWithCredentials = async (name: string, email: string, pass: string) => {
+  const signupWithCredentials = async (name: string, email: string, pass: string): Promise<boolean> => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -251,50 +272,83 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if (data.success) {
         setIsAuthenticated(true);
         setAuthProvider('email');
-        setUser(prev => ({
-          ...prev,
+        const newUser: User = {
+          ...user,
           id: data.user.id,
           name: data.user.name,
           email: data.user.email
-        }));
-        showNotification(`Account registered in MySQL database! Logged in as ${name}`, 'success');
+        };
+        setUser(newUser);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('roleradar_user', JSON.stringify(newUser));
+          localStorage.setItem('roleradar_auth', 'true');
+        }
+        showNotification(`Account created! Logged in as ${name}`, 'success');
+        return true;
       } else {
         showNotification(data.error || 'Registration failed', 'warning');
+        return false;
       }
     } catch (e) {
       setIsAuthenticated(true);
       setAuthProvider('email');
-      setUser(prev => ({ ...prev, name, email }));
+      const fallbackUser: User = { ...user, name, email };
+      setUser(fallbackUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('roleradar_user', JSON.stringify(fallbackUser));
+        localStorage.setItem('roleradar_auth', 'true');
+      }
       showNotification(`Account created! Logged in as ${name}`, 'success');
+      return true;
     }
   };
 
-  const loginWithGoogle = () => {
+  const loginWithGoogle = (customProfile?: { name: string; email: string }) => {
+    const googleName = customProfile?.name || 'Google Candidate';
+    const googleEmail = customProfile?.email || 'candidate.google@gmail.com';
     setIsAuthenticated(true);
     setAuthProvider('google');
-    setUser(prev => ({
-      ...prev,
-      name: 'Alex (Google SSO)',
-      email: 'alex.google@gmail.com',
+    const updatedUser: User = {
+      ...user,
+      id: `usr-google-${Date.now()}`,
+      name: googleName,
+      email: googleEmail,
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
-    }));
-    showNotification('Authenticated via Google OAuth 2.0', 'success');
+    };
+    setUser(updatedUser);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
+      localStorage.setItem('roleradar_auth', 'true');
+    }
+    showNotification(`Authenticated via Google as ${googleEmail}`, 'success');
   };
 
-  const loginWithLinkedIn = () => {
+  const loginWithLinkedIn = (customProfile?: { name: string; email: string }) => {
+    const linkedInName = customProfile?.name || 'LinkedIn Candidate';
+    const linkedInEmail = customProfile?.email || 'candidate.linkedin@domain.com';
     setIsAuthenticated(true);
     setAuthProvider('linkedin');
-    setUser(prev => ({
-      ...prev,
-      name: 'Alex (LinkedIn SSO)',
-      email: 'alex.linkedin@roleradar.ai',
+    const updatedUser: User = {
+      ...user,
+      id: `usr-linkedin-${Date.now()}`,
+      name: linkedInName,
+      email: linkedInEmail,
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
-    }));
-    showNotification('Authenticated via LinkedIn Connect', 'success');
+    };
+    setUser(updatedUser);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
+      localStorage.setItem('roleradar_auth', 'true');
+    }
+    showNotification(`Authenticated via LinkedIn as ${linkedInEmail}`, 'success');
   };
 
   const logout = () => {
     setIsAuthenticated(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('roleradar_user');
+      localStorage.removeItem('roleradar_auth');
+    }
     showNotification('You have logged out of RoleRadar', 'info');
   };
 
@@ -302,10 +356,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showNotification('Password updated successfully!', 'success');
   };
 
+  /**
+   * Sets the resume profile and immediately generates a tailored pool of jobs
+   * aligned specifically to the candidate's extracted skills, sorted in descending order of matchScore (99%, 98%, 97%...).
+   */
   const setResumeProfile = (profile: ResumeProfile) => {
     setResumeProfileState(profile);
     setUser(prev => ({ ...prev, resumeProfile: profile }));
-    showNotification('AI Resume Parsed! Match scores recalculated across all jobs.', 'success');
+
+    // Generate fresh, tailored opportunities based on resume skills & domains
+    const dynamicallyMatchedJobs = generateMatchedJobsForResume(profile);
+    setJobs(dynamicallyMatchedJobs);
+
+    showNotification(
+      `🎯 Resume analyzed! Found ${dynamicallyMatchedJobs.length} tailored opportunities ranked from 99% selection chance downwards.`,
+      'success'
+    );
   };
 
   const parseAndSetResume = async (fileName: string, text: string) => {
@@ -318,7 +384,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setSavedJobIds(prev => {
       const exists = prev.includes(jobId);
       const updated = exists ? prev.filter(id => id !== jobId) : [...prev, jobId];
-      showNotification(exists ? 'Job removed from saved bookmarks' : 'Job saved to your bookmarks!', 'success');
+      showNotification(exists ? 'Job removed from bookmarks' : 'Job saved to your bookmarks!', 'success');
       return updated;
     });
   };
@@ -345,7 +411,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     setApplications(prev => [newApp, ...prev]);
     setStats(prev => ({ ...prev, totalApplications: prev.totalApplications + 1 }));
-    showNotification(`Application submitted for ${job.title} at ${job.company}!`, 'success');
+    showNotification(`Application tracked for ${job.title} at ${job.company}!`, 'success');
   };
 
   const updateApplicationStatus = (appId: string, newStatus: JobApplication['status']) => {
@@ -367,7 +433,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       newJobs.push(j);
     }
 
-    setJobs(prev => [...newJobs, ...prev]);
+    setJobs(prev => {
+      const updated = [...newJobs, ...prev];
+      return updated.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    });
+
     setStats(prev => ({
       ...prev,
       totalJobs: prev.totalJobs + harvestedCount,
