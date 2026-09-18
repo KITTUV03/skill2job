@@ -1,0 +1,233 @@
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 3.3s
+ ○ Compiling / ...
+ ⨯ ./src/lib/store.tsx
+Error: 
+  [31mx[0m You're importing a component that needs createContext. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                ^^^^^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                           ^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useEffect. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                                     ^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+Import trace for requested module:
+./src/lib/store.tsx
+./src/app/layout.tsx
+ ⨯ ./src/lib/store.tsx
+Error: 
+  [31mx[0m You're importing a component that needs createContext. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                ^^^^^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                           ^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useEffect. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                                     ^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+Import trace for requested module:
+./src/lib/store.tsx
+./src/app/layout.tsx
+ ⨯ ./src/lib/store.tsx
+Error: 
+  [31mx[0m You're importing a component that needs createContext. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                ^^^^^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                           ^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useEffect. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                                     ^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+Import trace for requested module:
+./src/lib/store.tsx
+./src/app/layout.tsx
+ GET / 500 in 14664ms
+ ✓ Compiled /_error in 324ms (847 modules)
+ ⨯ ./src/lib/store.tsx
+Error: 
+  [31mx[0m You're importing a component that needs createContext. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                ^^^^^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User, JobPortalSource } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                           ^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User, JobPortalSource } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+  [31mx[0m You're importing a component that needs useEffect. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:1:1]
+ [2m1[0m | import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+   : [31;1m                                                     ^^^^^^^^^[0m
+ [2m2[0m | import { Job, ResumeProfile, JobApplication, ScraperStatus, ScraperLog, SystemStats, User, JobPortalSource } from '../types';
+ [2m3[0m | import { INITIAL_JOBS } from './jobData';
+ [2m4[0m | import { calculateMatchScore } from './aiMatching';
+   `----
+
+Import trace for requested module:
+./src/lib/store.tsx
+./src/app/layout.tsx
+ ✓ Compiled in 264ms (847 modules)
+ GET / 200 in 319ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1120ms (881 modules)
+ GET /dashboard 200 in 1328ms
+ ✓ Compiled /jobs in 425ms (905 modules)
+ GET /jobs 200 in 605ms
+ ✓ Compiled /resume in 354ms (919 modules)
+ GET /resume 200 in 503ms
+ ✓ Compiled /applications in 326ms (931 modules)
+ GET /applications 200 in 450ms
+ ✓ Compiled /admin in 355ms (947 modules)
+ GET /admin 200 in 498ms
+ ✓ Compiled /login in 321ms (957 modules)
+ GET /login 200 in 554ms
+ ✓ Compiled /signup in 466ms (965 modules)
+ GET /signup 200 in 599ms
+ ○ Compiling /api/jobs ...
+ ✓ Compiled /api/jobs in 576ms (97 modules)
+ GET /api/jobs 200 in 684ms
+ ○ Compiling / ...
+ ✓ Compiled / in 581ms (380 modules)
+ GET / 200 in 915ms
+ ✓ Compiled /resume in 157ms (395 modules)
+ ✓ Compiled /jobs in 158ms (383 modules)
+ ✓ Compiled /applications in 326ms (390 modules)
+ ○ Compiling /saved ...
+ ✓ Compiled /saved in 970ms (943 modules)
+ ✓ Compiled /dashboard in 301ms (400 modules)
+ ✓ Compiled /login in 229ms (406 modules)
+ ✓ Compiled /api/jobs in 396ms (424 modules)
+ GET /api/jobs 200 in 517ms
+ ✓ Compiled in 1465ms (972 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /resume 200 in 294ms
+ ✓ Compiled in 462ms (565 modules)
+ ✓ Compiled in 346ms (565 modules)
+ ✓ Compiled in 697ms (989 modules)
+ ✓ Compiled /login in 214ms (433 modules)
+ GET /login 200 in 390ms
+ ✓ Compiled /signup in 196ms (438 modules)
+ GET /signup 200 in 335ms
+ GET /jobs 200 in 81ms
+ GET /dashboard 200 in 50ms
+ GET /resume 200 in 48ms
+ GET / 200 in 198ms
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.5s
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.6s
+ ○ Compiling /api/jobs ...
+ ✓ Compiled /api/jobs in 664ms (57 modules)
+ GET /api/jobs 200 in 783ms
