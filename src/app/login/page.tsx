@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
@@ -25,7 +25,15 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get('redirect') || '/dashboard';
 
-  const { loginWithCredentials, loginWithGoogle, loginWithLinkedIn, updatePassword, showNotification, loadDemoResume } = useApp();
+  const { 
+    isAuthenticated,
+    loginWithCredentials, 
+    loginWithGoogle, 
+    loginWithLinkedIn, 
+    updatePassword, 
+    showNotification, 
+    loadDemoResume 
+  } = useApp();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,6 +51,13 @@ function LoginContent() {
   const [resetEmail, setResetEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  // State Observer: Redirect authenticated users to the dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace(redirectPath);
+    }
+  }, [isAuthenticated, redirectPath, router]);
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
@@ -56,12 +71,23 @@ function LoginContent() {
     try {
       const success = await loginWithCredentials(email.trim(), password);
       if (success) {
-        router.push(redirectPath);
+        router.replace(redirectPath);
       } else {
         setErrorMessage('Authentication failed. Please verify your credentials or register a new account.');
       }
     } catch {
       setErrorMessage('Unable to connect to authentication service.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleClick = async () => {
+    setIsLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch {
+      setShowGoogleModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +101,7 @@ function LoginContent() {
       email: googleEmail.trim()
     });
     setShowGoogleModal(false);
-    router.push(redirectPath);
+    router.replace(redirectPath);
   };
 
   const handlePasswordResetSubmit = (e: React.FormEvent) => {
@@ -131,8 +157,9 @@ function LoginContent() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() => setShowGoogleModal(true)}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+            onClick={handleGoogleClick}
+            disabled={isLoading}
+            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 disabled:opacity-50"
           >
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

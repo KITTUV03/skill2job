@@ -8,6 +8,14 @@ import { calculateMatchScore } from './aiMatching';
 import { parseResumeText } from './resumeParser';
 import { generateMatchedJobsForResume } from './resumeJobMatcher';
 import { INITIAL_SCRAPER_STATUSES, INITIAL_SCRAPER_LOGS, generateDynamicJob } from './scraperEngine';
+import { 
+  registerWithFirebase, 
+  loginWithFirebase, 
+  loginWithFirebaseGoogle, 
+  logoutFirebase, 
+  subscribeToAuthState, 
+  syncUserProfileToFirestore 
+} from './firebaseAuth';
 
 interface AppContextType {
   theme: 'dark' | 'light';
@@ -17,9 +25,9 @@ interface AppContextType {
   authProvider?: 'google' | 'linkedin' | 'email';
   loginWithCredentials: (email: string, pass: string) => Promise<boolean>;
   signupWithCredentials: (name: string, email: string, pass: string) => Promise<boolean>;
-  loginWithGoogle: (customProfile?: { name: string; email: string }) => void;
+  loginWithGoogle: (customProfile?: { name: string; email: string }) => Promise<void> | void;
   loginWithLinkedIn: (customProfile?: { name: string; email: string }) => void;
-  logout: () => void;
+  logout: () => Promise<void> | void;
   updatePassword: (newPass: string) => void;
   user: User;
   resumeProfile?: ResumeProfile;
@@ -125,8 +133,33 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     newJobsTodayText: '1,245 New Jobs Added Today'
   });
 
-  // Verify session on mount from localStorage / cookie API
+  // Firebase Auth State Observer & Session Verification on mount
   useEffect(() => {
+    // 1. Subscribe to Firebase Auth state changes
+    const unsubscribeAuth = subscribeToAuthState((authUser) => {
+      if (authUser) {
+        setIsAuthenticated(true);
+        setIsDemoMode(false);
+        setUser(prev => ({
+          ...prev,
+          id: authUser.id,
+          name: authUser.name,
+          email: authUser.email,
+          avatar: authUser.avatar || prev.avatar,
+          title: authUser.title || prev.title,
+          location: authUser.location || prev.location,
+          savedJobIds: authUser.savedJobIds || prev.savedJobIds
+        }));
+        if (authUser.savedJobIds && authUser.savedJobIds.length > 0) {
+          setSavedJobIds(authUser.savedJobIds);
+        }
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('roleradar_user', JSON.stringify(authUser));
+          localStorage.setItem('roleradar_auth', 'true');
+        }
+      }
+    });
+
     const verifyUserSession = async () => {
       if (typeof window === 'undefined') return;
       
@@ -138,6 +171,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           const parsed = JSON.parse(storedUser);
           setUser(parsed);
           setIsAuthenticated(true);
+          if (parsed.savedJobIds) {
+            setSavedJobIds(parsed.savedJobIds);
+          }
         } catch {
           // clean corrupted cache
           localStorage.removeItem('roleradar_user');
@@ -168,6 +204,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     };
 
     verifyUserSession();
+
+    return () => {
+      unsubscribeAuth();
+    };
   }, []);
 
   // Theme Sync
@@ -236,33 +276,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const loginWithCredentials = async (email: string, pass: string): Promise<boolean> => {
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass })
-      });
-      const data = await res.json();
-      if (data.success && data.user) {
+      const result = await loginWithFirebase(email, pass);
+      if (result.success && result.user) {
         setIsAuthenticated(true);
         setIsDemoMode(false);
         setAuthProvider('email');
-        const updatedUser: User = {
-          ...user,
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          title: data.user.title || 'Candidate / Engineer',
-          avatar: data.user.avatar || user.avatar
-        };
-        setUser(updatedUser);
+        setUser(result.user);
+        if (result.user.savedJobIds) {
+          setSavedJobIds(result.user.savedJobIds);
+        }
         if (typeof window !== 'undefined') {
-          localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
+          localStorage.setItem('roleradar_user', JSON.stringify(result.user));
           localStorage.setItem('roleradar_auth', 'true');
         }
-        showNotification(`Welcome back, ${updatedUser.name}!`, 'success');
+        showNotification(`Welcome back, ${result.user.name}!`, 'success');
         return true;
       } else {
-        showNotification(data.error || 'Authentication failed. Please verify credentials.', 'warning');
+        showNotification(result.error || 'Authentication failed. Please verify credentials.', 'warning');
         return false;
       }
     } catch {
@@ -273,33 +303,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const signupWithCredentials = async (name: string, email: string, pass: string): Promise<boolean> => {
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password: pass })
-      });
-      const data = await res.json();
-      if (data.success && data.user) {
+      const result = await registerWithFirebase(name, email, pass);
+      if (result.success && result.user) {
         setIsAuthenticated(true);
         setIsDemoMode(false);
         setAuthProvider('email');
-        const newUser: User = {
-          ...user,
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-          title: data.user.title || 'Candidate / Engineer',
-          avatar: data.user.avatar || user.avatar
-        };
-        setUser(newUser);
+        setUser(result.user);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('roleradar_user', JSON.stringify(newUser));
+          localStorage.setItem('roleradar_user', JSON.stringify(result.user));
           localStorage.setItem('roleradar_auth', 'true');
         }
         showNotification(`Account created! Welcome to RoleRadar, ${name}!`, 'success');
         return true;
       } else {
-        showNotification(data.error || 'Registration failed.', 'warning');
+        showNotification(result.error || 'Registration failed.', 'warning');
         return false;
       }
     } catch {
@@ -308,25 +325,50 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const loginWithGoogle = (customProfile?: { name: string; email: string }) => {
-    const googleName = customProfile?.name || 'Google Candidate';
-    const googleEmail = customProfile?.email || 'candidate.google@gmail.com';
-    setIsAuthenticated(true);
-    setIsDemoMode(false);
-    setAuthProvider('google');
-    const updatedUser: User = {
-      ...user,
-      id: `usr-google-${Date.now()}`,
-      name: googleName,
-      email: googleEmail,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
-    };
-    setUser(updatedUser);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
-      localStorage.setItem('roleradar_auth', 'true');
+  const loginWithGoogle = async (customProfile?: { name: string; email: string }) => {
+    if (customProfile) {
+      const googleName = customProfile.name || 'Google Candidate';
+      const googleEmail = customProfile.email || 'candidate.google@gmail.com';
+      setIsAuthenticated(true);
+      setIsDemoMode(false);
+      setAuthProvider('google');
+      const updatedUser: User = {
+        ...user,
+        id: `usr-google-${Date.now()}`,
+        name: googleName,
+        email: googleEmail,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+      };
+      setUser(updatedUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('roleradar_user', JSON.stringify(updatedUser));
+        localStorage.setItem('roleradar_auth', 'true');
+      }
+      showNotification(`Signed in with Google as ${googleEmail}`, 'success');
+      return;
     }
-    showNotification(`Signed in with Google as ${googleEmail}`, 'success');
+
+    try {
+      const result = await loginWithFirebaseGoogle();
+      if (result.success && result.user) {
+        setIsAuthenticated(true);
+        setIsDemoMode(false);
+        setAuthProvider('google');
+        setUser(result.user);
+        if (result.user.savedJobIds) {
+          setSavedJobIds(result.user.savedJobIds);
+        }
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('roleradar_user', JSON.stringify(result.user));
+          localStorage.setItem('roleradar_auth', 'true');
+        }
+        showNotification(`Signed in with Google as ${result.user.email}`, 'success');
+      } else if (result.error) {
+        showNotification(result.error, 'warning');
+      }
+    } catch {
+      showNotification('Google sign-in encountered an error.', 'warning');
+    }
   };
 
   const loginWithLinkedIn = (customProfile?: { name: string; email: string }) => {
@@ -350,7 +392,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showNotification(`Signed in with LinkedIn as ${linkedInEmail}`, 'success');
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await logoutFirebase();
     setIsAuthenticated(false);
     setIsDemoMode(false);
     setUser({
@@ -467,6 +510,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const exists = prev.includes(jobId);
       const updated = exists ? prev.filter(id => id !== jobId) : [...prev, jobId];
       showNotification(exists ? 'Job removed from bookmarks' : 'Job saved to your bookmarks!', 'success');
+      if (user?.id) {
+        syncUserProfileToFirestore(user.id, { savedJobIds: updated });
+      }
       return updated;
     });
     return true;
