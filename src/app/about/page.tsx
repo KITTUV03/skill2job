@@ -20,8 +20,6 @@ import { Footer } from '@/components/Footer';
 export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100">
-      <Navbar />
-
       <main className="flex-1">
         
         {/* Hero Section */}

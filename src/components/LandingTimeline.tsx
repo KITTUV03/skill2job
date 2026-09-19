@@ -1,61 +1,61 @@
 'use client';
 
 import React from 'react';
-import { UploadCloud, Cpu, Globe2, BarChart3, Send } from 'lucide-react';
+import { UploadCloud, Cpu, Search, Award, Send } from 'lucide-react';
 
 export const LandingTimeline: React.FC = () => {
   const steps = [
     {
       step: '01',
-      title: 'Upload Resume',
-      desc: 'Drag and drop your resume in PDF, DOCX, or text format.',
+      title: '1. Upload Resume',
+      desc: 'Drag & drop your resume in PDF or DOCX format, or test instantly in Demo Mode.',
       icon: UploadCloud,
-      color: 'bg-blue-600'
+      gradient: 'from-primary-600 to-blue-500'
     },
     {
       step: '02',
-      title: 'AI Extracts Skills & Experience',
-      desc: 'Our neural model parses tech stacks, domain experience, and certifications.',
+      title: '2. AI Extracts Skills',
+      desc: 'Neural taxonomy engine extracts technical skills, experience years, and project stack.',
       icon: Cpu,
-      color: 'bg-purple-600'
+      gradient: 'from-secondary-600 to-purple-500'
     },
     {
       step: '03',
-      title: 'Search Across Multiple Portals',
-      desc: 'Harvester engine searches LinkedIn, Naukri, Indeed, Wellfound, & career pages.',
-      icon: Globe2,
-      color: 'bg-cyan-600'
+      title: '3. AI Searches Jobs',
+      desc: 'Synchronizes 12,458+ opportunities across LinkedIn, Naukri, Indeed, and Wellfound.',
+      icon: Search,
+      gradient: 'from-cyan-600 to-accent-500'
     },
     {
       step: '04',
-      title: 'Get Ranked Job Matches',
-      desc: 'View AI matching scores (96%, 90%, 85%) broken down by skills & location.',
-      icon: BarChart3,
-      color: 'bg-emerald-600'
+      title: '4. Jobs Ranked',
+      desc: 'Scores jobs by selection probability (96%, 94%, 91%) with explicit skill gap vectors.',
+      icon: Award,
+      gradient: 'from-emerald-600 to-teal-500'
     },
     {
       step: '05',
-      title: 'Apply Instantly',
-      desc: 'Directly apply or track your application stage with the built-in Kanban board.',
+      title: '5. Apply Instantly',
+      desc: 'Apply directly through verified portal links and advance your Kanban tracker pipeline.',
       icon: Send,
-      color: 'bg-indigo-600'
+      gradient: 'from-indigo-600 to-primary-600'
     }
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-white dark:bg-slate-900">
+    <section id="how-it-works" className="py-20 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200/80 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
-          <span className="px-3 py-1 text-xs font-bold rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 tracking-wide uppercase">
-            Simple 5-Step Process
+          <span className="px-3.5 py-1 text-xs font-black rounded-full bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20 tracking-wider uppercase">
+            5-Step Automated Workflow
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             How <span className="text-gradient">RoleRadar Works</span>
           </h2>
-          <p className="text-base text-slate-600 dark:text-slate-400">
-            From resume upload to interview invitation in a seamless, automated workflow.
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+            From resume upload to interview invitation in an automated, AI-accelerated sequence.
           </p>
         </div>
 
@@ -63,7 +63,7 @@ export const LandingTimeline: React.FC = () => {
         <div className="relative">
           
           {/* Connector Line for Desktop */}
-          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 -translate-y-1/2 rounded-full opacity-20 z-0" />
+          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-primary-600 via-secondary-600 via-accent-500 to-emerald-500 -translate-y-1/2 rounded-full opacity-30 z-0" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 relative z-10">
             {steps.map((item, idx) => {
@@ -71,18 +71,18 @@ export const LandingTimeline: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="p-6 rounded-3xl glass-card bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 shadow-lg flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300"
+                  className="p-6 rounded-3xl glass-card bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300"
                 >
-                  <div className={`w-12 h-12 rounded-2xl ${item.color} text-white flex items-center justify-center font-bold text-lg shadow-md mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-6 h-6" />
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${item.gradient} text-white flex items-center justify-center font-bold text-lg shadow-lg mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-7 h-7" />
                   </div>
-                  <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">
+                  <span className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest mb-1">
                     Step {item.step}
                   </span>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>

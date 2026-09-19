@@ -17,7 +17,9 @@ import {
   LogIn,
   Bookmark,
   LogOut,
-  Settings
+  Settings,
+  Clock,
+  Play
 } from 'lucide-react';
 import { useApp } from '@/lib/store';
 import { AuthModal } from './AuthModal';
@@ -25,7 +27,7 @@ import { AuthModal } from './AuthModal';
 export const Navbar: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, scraperLogs, isAuthenticated, logout } = useApp();
+  const { user, scraperLogs, isAuthenticated, logout, stats, isDemoMode, loadDemoResume } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -33,6 +35,10 @@ export const Navbar: React.FC = () => {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=${encodeURIComponent(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`)}`);
+      return;
+    }
     if (searchQuery.trim()) {
       router.push(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
     }
@@ -44,17 +50,24 @@ export const Navbar: React.FC = () => {
     { label: 'Search Jobs', href: '/jobs' },
     { label: 'Upload & Match', href: '/resume' },
     { label: 'Applications', href: '/applications' },
-    { label: 'Harvester', href: '/admin' },
+    { label: 'Settings', href: '/settings' },
+    { label: 'Admin Harvester', href: '/admin' },
   ];
 
   const publicLinks = [
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/contact' },
   ];
 
   const navLinks = isAuthenticated ? authenticatedLinks : publicLinks;
+
+  const handleDemoClick = async () => {
+    await loadDemoResume('vlsi');
+    router.push('/dashboard');
+  };
 
   return (
     <>
@@ -73,19 +86,23 @@ export const Navbar: React.FC = () => {
             </span>
           </Link>
 
-          {/* Quick Search Bar (For Authenticated Users) */}
-          {isAuthenticated && (
-            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-xs relative">
-              <Search className="w-4 h-4 absolute left-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search skills, roles, companies..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-1.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all shadow-sm"
-              />
-            </form>
-          )}
+          {/* Real-time Status Indicator Pill in Nav */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{stats.lastSyncedText || 'Last Synced 2 Minutes Ago'}</span>
+          </div>
+
+          {/* Quick Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-xs relative">
+            <Search className="w-4 h-4 absolute left-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search skills, roles, companies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-1.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all shadow-sm"
+            />
+          </form>
 
           {/* Navigation Tabs */}
           <nav className="hidden md:flex items-center gap-1 text-xs font-bold">
@@ -95,7 +112,7 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3.5 py-2 rounded-xl transition-all ${
+                  className={`px-3 py-2 rounded-xl transition-all ${
                     isActive
                       ? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20 font-black shadow-sm'
                       : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -170,33 +187,33 @@ export const Navbar: React.FC = () => {
                     <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-50 p-2 text-xs animate-fadeIn">
                       <div className="p-3 border-b border-slate-200 dark:border-slate-800">
                         <p className="font-black text-slate-900 dark:text-white truncate">{user.name || 'Candidate'}</p>
-                        <p className="text-slate-400 truncate">{user.email || 'Logged In'}</p>
+                        <p className="text-slate-400 truncate">{user.email || 'Candidate Account'}</p>
                       </div>
 
                       <div className="py-1 space-y-0.5 font-semibold">
                         <Link href="/dashboard" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Candidate Dashboard
+                          Dashboard
                         </Link>
                         <Link href="/jobs" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Matched Opportunities
+                          Job Feed
                         </Link>
                         <Link href="/resume" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Resume AI Scanner
+                          Resume AI Matcher
                         </Link>
                         <Link href="/saved" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Saved Bookmarks
+                          Saved Jobs
                         </Link>
                         <Link href="/applications" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Applications Board
+                          Application Tracker
                         </Link>
-                        <Link href="/profile" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                          Profile & Settings
+                        <Link href="/settings" onClick={() => setShowUserMenu(false)} className="block px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                          Settings & Security
                         </Link>
                       </div>
 
                       <div className="pt-1 border-t border-slate-200 dark:border-slate-800">
                         <button
-                          onClick={() => { logout(); setShowUserMenu(false); router.push('/login'); }}
+                          onClick={() => { logout(); setShowUserMenu(false); }}
                           className="w-full text-left px-3 py-2 rounded-xl text-rose-600 font-bold hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-2"
                         >
                           <LogOut className="w-3.5 h-3.5" />
@@ -210,6 +227,13 @@ export const Navbar: React.FC = () => {
             ) : (
               /* Public / Unauthenticated Actions */
               <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDemoClick}
+                  className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl border border-primary-500/30 text-primary-600 dark:text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 text-xs font-bold transition-colors"
+                >
+                  <Play className="w-3 h-3 fill-current" />
+                  <span>Try Demo</span>
+                </button>
                 <Link
                   href="/login"
                   className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

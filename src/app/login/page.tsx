@@ -3,7 +3,21 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Radar, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck, KeyRound, Loader2, Sparkles, X, User } from 'lucide-react';
+import { 
+  Radar, 
+  Mail, 
+  Lock, 
+  ArrowRight, 
+  Eye, 
+  EyeOff, 
+  ShieldCheck, 
+  KeyRound, 
+  Loader2, 
+  Sparkles, 
+  X, 
+  User, 
+  CheckCircle2 
+} from 'lucide-react';
 import { useApp } from '@/lib/store';
 
 function LoginContent() {
@@ -11,7 +25,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get('redirect') || '/dashboard';
 
-  const { loginWithCredentials, loginWithGoogle, loginWithLinkedIn, updatePassword, showNotification } = useApp();
+  const { loginWithCredentials, loginWithGoogle, loginWithLinkedIn, updatePassword, showNotification, loadDemoResume } = useApp();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +33,7 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Google SSO Interactive Modal
+  // Google SSO Modal
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [googleEmail, setGoogleEmail] = useState('');
   const [googleName, setGoogleName] = useState('');
@@ -44,10 +58,10 @@ function LoginContent() {
       if (success) {
         router.push(redirectPath);
       } else {
-        setErrorMessage('Authentication failed. Please verify your credentials or create a new account.');
+        setErrorMessage('Authentication failed. Please verify your credentials or register a new account.');
       }
-    } catch (err: any) {
-      setErrorMessage('Network error while connecting to authentication service.');
+    } catch {
+      setErrorMessage('Unable to connect to authentication service.');
     } finally {
       setIsLoading(false);
     }
@@ -64,12 +78,6 @@ function LoginContent() {
     router.push(redirectPath);
   };
 
-  const fillDemoAccount = () => {
-    setEmail('alex.vanderbilt@roleradar.ai');
-    setPassword('CandidatePass2026!');
-    setErrorMessage('');
-  };
-
   const handlePasswordResetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword.trim()) {
@@ -80,18 +88,26 @@ function LoginContent() {
     }
   };
 
+  const handleDemoTestDrive = () => {
+    loadDemoResume('vlsi');
+    router.push('/dashboard');
+  };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-[#F8FAFC] dark:bg-[#0F172A] relative">
       
+      {/* Background radial gradient */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-primary-600/10 via-secondary-600/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+
       {/* Login Card */}
-      <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6">
+      <div className="w-full max-w-md p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6 relative z-10">
         
         {/* Header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-1">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary-600 to-secondary-600 p-0.5 shadow-md">
               <div className="w-full h-full bg-[#0F172A] rounded-[14px] flex items-center justify-center">
-                <Radar className="w-5 h-5 text-accent-500" />
+                <Radar className="w-5 h-5 text-accent-500 animate-pulse" />
               </div>
             </div>
             <span className="font-black text-2xl tracking-tight text-slate-900 dark:text-white">
@@ -159,7 +175,7 @@ function LoginContent() {
               <input
                 type="email"
                 required
-                placeholder="you@domain.com"
+                placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
@@ -178,7 +194,7 @@ function LoginContent() {
                 }}
                 className="text-[11px] font-bold text-primary-600 dark:text-primary-400 hover:underline"
               >
-                Reset Password?
+                Forgot Password?
               </button>
             </div>
             <div className="relative">
@@ -204,16 +220,8 @@ function LoginContent() {
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-2">
               <input type="checkbox" id="remember" defaultChecked className="rounded accent-primary-600" />
-              <label htmlFor="remember" className="text-xs text-slate-600 dark:text-slate-400">Remember me for 30 days</label>
+              <label htmlFor="remember" className="text-xs text-slate-600 dark:text-slate-400">Remember me</label>
             </div>
-
-            <button
-              type="button"
-              onClick={fillDemoAccount}
-              className="text-[11px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline"
-            >
-              ⚡ Fill Demo Account
-            </button>
           </div>
 
           <button
@@ -224,7 +232,7 @@ function LoginContent() {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Authenticating...</span>
+                <span>Verifying credentials...</span>
               </>
             ) : (
               <>
@@ -235,8 +243,23 @@ function LoginContent() {
           </button>
         </form>
 
+        {/* Demo Mode Action */}
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 border border-primary-500/20 text-center space-y-1.5">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-primary-600 dark:text-primary-400">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            <span>Want to test the platform first?</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleDemoTestDrive}
+            className="text-xs font-black text-slate-900 dark:text-white underline hover:text-primary-600 transition-colors"
+          >
+            🚀 Try Demo Resume & Dashboard Preview
+          </button>
+        </div>
+
         {/* Footer Link */}
-        <div className="text-center pt-2 text-xs text-slate-600 dark:text-slate-400">
+        <div className="text-center pt-1 text-xs text-slate-600 dark:text-slate-400">
           Don't have an account yet?{' '}
           <Link href="/signup" className="font-extrabold text-primary-600 dark:text-primary-400 hover:underline">
             Create Free Account
@@ -274,7 +297,7 @@ function LoginContent() {
                   <User className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="e.g. Priyanshu Sharma"
+                    placeholder="Candidate Name"
                     value={googleName}
                     onChange={(e) => setGoogleName(e.target.value)}
                     className="w-full pl-10 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
@@ -328,11 +351,11 @@ function LoginContent() {
 
             <form onSubmit={handlePasswordResetSubmit} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Target Email</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Account Email</label>
                 <input
                   type="email"
                   required
-                  placeholder="your.email@domain.com"
+                  placeholder="name@company.com"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
                   className="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700"
@@ -344,7 +367,7 @@ function LoginContent() {
                 <input
                   type="password"
                   required
-                  placeholder="Enter new strong password"
+                  placeholder="Enter new secure password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full p-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700"

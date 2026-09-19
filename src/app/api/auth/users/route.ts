@@ -1,33 +1,23 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail } from '@/lib/db';
+import { getAllUsersFromDB } from '@/lib/db';
 
 export async function GET() {
-  // Returns all registered candidate accounts in the database
-  const mockRegisteredUsers = [
-    {
-      id: 'usr-1',
-      name: 'Alex Vanderbilt',
-      email: 'alex.vanderbilt@roleradar.ai',
-      title: 'Senior VLSI & AI Systems Lead',
-      authProvider: 'MySQL DB / Email',
-      createdAt: '2026-09-18T20:00:00.000Z',
-      status: 'Active'
-    },
-    {
-      id: 'usr-1789769246967',
-      name: 'Kittu Candidate',
-      email: 'kittu@roleradar.ai',
-      title: 'Candidate / Engineer',
-      authProvider: 'MySQL DB / Email',
-      createdAt: '2026-09-18T22:07:26.967Z',
-      status: 'Active'
-    }
-  ];
+  const users = await getAllUsersFromDB();
+  const sanitized = users.map(u => ({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    title: u.title,
+    avatar: u.avatar,
+    authProvider: 'RoleRadar Auth / MySQL DB',
+    createdAt: u.created_at,
+    status: 'Active'
+  }));
 
   return NextResponse.json({
     success: true,
-    total: mockRegisteredUsers.length,
-    users: mockRegisteredUsers,
+    total: sanitized.length,
+    users: sanitized,
     table: 'users',
     schema: 'CREATE TABLE users (id VARCHAR(255) PRIMARY KEY, name VARCHAR(255), email VARCHAR(255) UNIQUE, password_hash VARCHAR(255), created_at TIMESTAMP);'
   });

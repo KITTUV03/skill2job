@@ -65,8 +65,6 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0F172A] text-slate-900 dark:text-slate-100">
-      <Navbar />
-
       <main className="flex-1 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
         
         {/* Header */}

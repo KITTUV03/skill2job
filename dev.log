@@ -256,3 +256,155 @@ Import trace for requested module:
  ✓ Compiled in 678ms (315 modules)
  ✓ Compiled in 626ms (315 modules)
  ✓ Compiled in 478ms (315 modules)
+ ✓ Compiled in 715ms (301 modules)
+ ✓ Compiled in 352ms (301 modules)
+ ✓ Compiled in 331ms (302 modules)
+ ✓ Compiled in 482ms (316 modules)
+ ✓ Compiled in 459ms (316 modules)
+ ✓ Compiled in 895ms (317 modules)
+ ✓ Compiled in 384ms (317 modules)
+ ✓ Compiled in 587ms (317 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 1802ms (649 modules)
+ GET / 200 in 2167ms
+ ✓ Compiled in 808ms (350 modules)
+ ✓ Compiled in 302ms (350 modules)
+ ✓ Compiled in 276ms (350 modules)
+ ✓ Compiled in 392ms (350 modules)
+ ✓ Compiled in 676ms (350 modules)
+ ✓ Compiled in 696ms (352 modules)
+ ✓ Compiled in 445ms (352 modules)
+ ✓ Compiled in 330ms (352 modules)
+ ✓ Compiled in 479ms (352 modules)
+ ✓ Compiled in 388ms (352 modules)
+ ✓ Compiled in 503ms (352 modules)
+ ✓ Compiled in 732ms (352 modules)
+ ✓ Compiled in 403ms (338 modules)
+ ✓ Compiled in 777ms (352 modules)
+ ⨯ ./src/lib/store.tsx
+Error: 
+  [31mx[0m Expected a semicolon
+    ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:69:1]
+ [2m69[0m |   });
+ [2m70[0m |     resumeProfile,
+ [2m71[0m |     savedJobIds
+ [2m72[0m |   });
+    : [31;1m   ^[0m
+ [2m73[0m | 
+ [2m74[0m |   const [applications, setApplications] = useState<JobApplication[]>([
+ [2m75[0m |     {
+    `----
+
+  [31mx[0m Return statement is not allowed here
+     ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:431:1]
+ [2m431[0m |         showNotification(`🔥 Harvested ${harvestedCount} new listings from active portals!`, 'success');
+ [2m432[0m |       };
+ [2m433[0m |     
+ [2m434[0m | [31;1m,[0m[31;1m-[0m[31;1m>[0m   return (
+ [2m435[0m | [31;1m|[0m       <AppContext.Provider
+ [2m436[0m | [31;1m|[0m         value={{
+ [2m437[0m | [31;1m|[0m           theme,
+ [2m438[0m | [31;1m|[0m           toggleTheme,
+ [2m439[0m | [31;1m|[0m           isAuthenticated,
+ [2m440[0m | [31;1m|[0m           authProvider,
+ [2m441[0m | [31;1m|[0m           loginWithCredentials,
+ [2m442[0m | [31;1m|[0m           signupWithCredentials,
+ [2m443[0m | [31;1m|[0m           loginWithGoogle,
+ [2m444[0m | [31;1m|[0m           loginWithLinkedIn,
+ [2m445[0m | [31;1m|[0m           logout,
+ [2m446[0m | [31;1m|[0m           updatePassword,
+ [2m447[0m | [31;1m|[0m           user,
+ [2m448[0m | [31;1m|[0m           resumeProfile,
+ [2m449[0m | [31;1m|[0m           setResumeProfile,
+ [2m450[0m | [31;1m|[0m           parseAndSetResume,
+ [2m451[0m | [31;1m|[0m           jobs,
+ [2m452[0m | [31;1m|[0m           savedJobIds,
+ [2m453[0m | [31;1m|[0m           toggleSaveJob,
+ [2m454[0m | [31;1m|[0m           applications,
+ [2m455[0m | [31;1m|[0m           addApplication,
+ [2m456[0m | [31;1m|[0m           updateApplicationStatus,
+ [2m457[0m | [31;1m|[0m           scraperStatuses,
+ [2m458[0m | [31;1m|[0m           scraperLogs,
+ [2m459[0m | [31;1m|[0m           triggerManualScrape,
+ [2m460[0m | [31;1m|[0m           stats,
+ [2m461[0m | [31;1m|[0m           selectedJobForModal,
+ [2m462[0m | [31;1m|[0m           setSelectedJobForModal,
+ [2m463[0m | [31;1m|[0m           notification,
+ [2m464[0m | [31;1m|[0m           showNotification
+ [2m465[0m | [31;1m|[0m         }}
+ [2m466[0m | [31;1m|[0m       >
+ [2m467[0m | [31;1m|[0m         {children}
+ [2m468[0m | [31;1m|[0m       </AppContext.Provider>
+ [2m469[0m | [31;1m`[0m[31;1m-[0m[31;1m>[0m   );
+ [2m470[0m |     };
+ [2m471[0m |     
+ [2m472[0m |     export const useApp = () => {
+     `----
+
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/home/mirafra_lp38/skill2job/src/lib/store.tsx[0m:467:1]
+ [2m467[0m |       {children}
+ [2m468[0m |     </AppContext.Provider>
+ [2m469[0m |   );
+ [2m470[0m | };
+     : [31;1m^[0m
+ [2m471[0m | 
+ [2m472[0m | export const useApp = () => {
+ [2m473[0m |   const context = useContext(AppContext);
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/lib/store.tsx
+ ✓ Compiled in 343ms (338 modules)
+ ✓ Compiled in 221ms (338 modules)
+ ✓ Compiled in 176ms (338 modules)
+ ✓ Compiled in 507ms (352 modules)
+ ✓ Compiled in 358ms (352 modules)
+ ✓ Compiled in 1063ms (352 modules)
+ ✓ Compiled in 774ms (352 modules)
+ ✓ Compiled in 463ms (352 modules)
+ ✓ Compiled in 724ms (352 modules)
+ ✓ Compiled in 358ms (352 modules)
+ ✓ Compiled in 284ms (338 modules)
+ ✓ Compiled / in 491ms (313 modules)
+TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (/home/mirafra_lp38/skill2job/.next/server/webpack-runtime.js:33:42)
+    at require (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:40:20064)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108376
+    at ea (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108583)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:110813
+    at Object._fromJSON (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:111370)
+    at JSON.parse (<anonymous>)
+    at ec (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:109078)
+    at eo (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108123)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115291
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115308
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115341
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115358
+    at t (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115581)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (/home/mirafra_lp38/skill2job/.next/server/webpack-runtime.js:33:42)
+digest: "390917139"
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (/home/mirafra_lp38/skill2job/.next/server/webpack-runtime.js:33:42)
+    at require (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:40:20064)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108376
+    at ea (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108583)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:110813
+    at Object._fromJSON (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:111370)
+    at JSON.parse (<anonymous>)
+    at ec (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:109078)
+    at eo (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108123)
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115291
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115308
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115341
+    at /home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115358
+    at t (/home/mirafra_lp38/skill2job/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115581) {
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1379ms (878 modules)
+ HEAD / 500 in 2381ms

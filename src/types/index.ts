@@ -53,6 +53,8 @@ export interface Job {
   isNew?: boolean;
   matchScore?: number;
   matchBreakdown?: MatchBreakdown;
+  postedTimeAgo?: string;
+  lastVerifiedAgo?: string;
 }
 
 export interface ResumeProfile {
@@ -124,6 +126,9 @@ export interface SystemStats {
   activeCompanies: number;
   totalApplications: number;
   matchSuccessRate: number; // percentage e.g. 94.2
+  lastSyncedText: string;
+  activeJobsText: string;
+  newJobsTodayText: string;
 }
 
 export interface User {
